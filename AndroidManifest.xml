@@ -32,6 +32,9 @@
                 android:name="android.nfc.cardemulation.host_apdu_service"
                 android:resource="@xml/aid_list" />
         </service>
+        <service
+            android:name=".ConnectionService"
+            android:enabled="true" />
 
         <activity
             android:name="org.maneulyori.seoip.MainActivity"
