@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SEoIP</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="servicedesc">SE over IP Service</string>
+    <string name="aiddescription">SE over IP AID</string>
+
+</resources>
