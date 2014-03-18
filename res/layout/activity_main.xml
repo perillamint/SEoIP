@@ -16,7 +16,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="14dp"
-        android:ems="10" >
+        android:ems="10"
+        android:text="00 A4 00 00" >
 
         <requestFocus />
     </EditText>
@@ -38,16 +39,7 @@
         android:layout_alignRight="@+id/APDU"
         android:layout_below="@+id/send"
         android:layout_marginTop="25dp"
-        android:text="TextView" />
-
-    <Button
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/response"
-        android:layout_below="@+id/response"
-        android:layout_marginTop="55dp"
-        android:text="Start" />
+        android:text="Response" />
 
     <Button
         android:id="@+id/stop"
@@ -66,5 +58,47 @@
         android:layout_alignBottom="@+id/stop"
         android:layout_toRightOf="@+id/stop"
         android:text="Reconnect" />
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/response"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="83dp"
+        android:text="Start" />
+
+    <EditText
+        android:id="@+id/serverAddr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/response"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:text="elrond.maneulyori.org" />
+
+    <EditText
+        android:id="@+id/serverPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/start"
+        android:layout_alignRight="@+id/response"
+        android:layout_below="@+id/serverAddr"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text="p@ssword" />
+
+    <EditText
+        android:id="@+id/serverPort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/serverAddr"
+        android:layout_alignBottom="@+id/serverAddr"
+        android:layout_alignRight="@+id/serverPass"
+        android:layout_toRightOf="@+id/serverAddr"
+        android:ems="10"
+        android:inputType="number"
+        android:text="1337" />
 
 </RelativeLayout>

@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -34,9 +35,9 @@ public class MainActivity extends Activity {
 	private Intent connectionIntent;
 	private Intent seoveripIntent;
 
-	private String address = "elrond.maneulyori.org";
-	private int port = 1337;
-	private String key = "changethis";
+	private String address;
+	private int port;
+	private String key;
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -47,7 +48,8 @@ public class MainActivity extends Activity {
 			ConnectionBinder binder = (ConnectionBinder) service;
 			mService = binder.getService();
 
-			if (!mService.isConnected()) {
+			if ((!mService.isConnected()) && address != null && key != null
+					&& port != 0) {
 				mService.setupConnection(sslcontext.getSocketFactory(),
 						address, port, key);
 			}
@@ -85,7 +87,7 @@ public class MainActivity extends Activity {
 
 			connectionIntent = new Intent(this, ConnectionService.class);
 			seoveripIntent = new Intent(this, SEOverIPService.class);
-			
+
 			startService(connectionIntent);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,24 +100,28 @@ public class MainActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 
-		if (!mBound) {
-			bindService(connectionIntent, mConnection, Context.BIND_AUTO_CREATE);
-		}
-		
 		startService(seoveripIntent);
 
 		Button send = (Button) findViewById(R.id.send);
 		Button start = (Button) findViewById(R.id.start);
 		Button stop = (Button) findViewById(R.id.stop);
-		Button reconnect = (Button)findViewById(R.id.reconnect);
-		
+		Button reconnect = (Button) findViewById(R.id.reconnect);
+
 		final EditText edittext = (EditText) findViewById(R.id.APDU);
 		final TextView textview = (TextView) findViewById(R.id.response);
+		final TextView serverAddr = (TextView) findViewById(R.id.serverAddr);
+		final TextView serverPass = (TextView) findViewById(R.id.serverPass);
+		final TextView serverPort = (TextView) findViewById(R.id.serverPort);
 
 		send.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				
+				if(!mBound) {
+					Toast.makeText(MainActivity.this, "Not connected", Toast.LENGTH_SHORT).show();
+					return ;
+				}
 				String[] splittedAPDU = edittext.getText().toString()
 						.split(" ");
 
@@ -156,27 +162,37 @@ public class MainActivity extends Activity {
 			}
 
 		});
-		
+
 		start.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				address = serverAddr.getText().toString();
+				key = serverPass.getText().toString();
+				port = Integer.parseInt(serverPort.getText().toString());
+				
 				startService(connectionIntent);
+				
 				if (!mBound) {
-					bindService(connectionIntent, mConnection, Context.BIND_AUTO_CREATE);
+					bindService(connectionIntent, mConnection,
+							Context.BIND_AUTO_CREATE);
 				}
 			}
 		});
-		
+
 		stop.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				stopService(connectionIntent);
 			}
 		});
-		
+
 		reconnect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				address = serverAddr.getText().toString();
+				key = serverPass.getText().toString();
+				port = Integer.parseInt(serverPort.getText().toString());
+				
 				mService.reconnect();
 			}
 		});
@@ -186,7 +202,6 @@ public class MainActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		unbindService(mConnection);
-		System.out.println("HELLO");
 		stopService(seoveripIntent);
 	}
 

@@ -61,7 +61,7 @@ public class SEOverIPService extends HostApduService {
 
 			if (!mService.isConnected()) {
 				Log.d("SEoIP", "ERR No connection");
-				return new byte[] { (byte) 0x6A, (byte) 0x82 };
+				return new byte[] { (byte) 0x6A, (byte) 0x82 }; //File not found response.
 			}
 
 			try {
