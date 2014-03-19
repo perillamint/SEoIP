@@ -193,10 +193,10 @@ public class MainActivity extends Activity {
 
 						if ((!mService.isConnected()) && address != null
 								&& key != null && port != 0) {
-							mService.setupConnection(
+							if (mService.setupConnection(
 									sslcontext.getSocketFactory(), address,
-									port, key);
-							mService.sendCommand("LOCK 0");
+									port, key))
+								mService.sendCommand("LOCK 0");
 						}
 
 						handler.post(toastRunnable);
@@ -225,7 +225,7 @@ public class MainActivity extends Activity {
 										"Disconnected", Toast.LENGTH_SHORT)
 										.show();
 								connStat.setText("Disconnected.");
-								
+
 							}
 						};
 

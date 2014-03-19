@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
@@ -55,7 +56,7 @@ public class ConnectionService extends Service {
 					@Override
 					public void run() {
 						while (!terminate) {
-							while (sendQueue.size() <= 0) {
+							while (sendQueue.size() <= 0 && (!terminate)) {
 								try {
 									Thread.sleep(100);
 								} catch (InterruptedException e) {
@@ -63,7 +64,8 @@ public class ConnectionService extends Service {
 								}
 							}
 
-							socketPrintStream.println(sendQueue.pop());
+							if (!terminate)
+								socketPrintStream.println(sendQueue.pop());
 						}
 
 					}
@@ -107,11 +109,11 @@ public class ConnectionService extends Service {
 
 	private Thread mainThread;
 
-	public void setupConnection(SSLSocketFactory sslSocketFactory, String addr,
-			int port, String key) {
+	public boolean setupConnection(SSLSocketFactory sslSocketFactory,
+			String addr, int port, String key) {
 
 		if (isRunning) {
-			return;
+			return false;
 		}
 
 		mainThread = new Thread(mainRunnable);
@@ -122,13 +124,15 @@ public class ConnectionService extends Service {
 		this.key = key;
 		this.isSSL = true;
 		mainThread.start();
+
+		return true;
 	}
 
-	public void setupConnection(SSLSocketFactory sslSocketFactory, String addr,
-			int port, String key, boolean isSSL) {
+	public boolean setupConnection(SSLSocketFactory sslSocketFactory,
+			String addr, int port, String key, boolean isSSL) {
 
 		if (isRunning) {
-			return;
+			return false;
 		}
 
 		mainThread = new Thread(mainRunnable);
@@ -139,6 +143,8 @@ public class ConnectionService extends Service {
 		this.key = key;
 		this.isSSL = isSSL;
 		mainThread.start();
+
+		return true;
 	}
 
 	private void sendAuth(String key) {
@@ -235,6 +241,8 @@ public class ConnectionService extends Service {
 			return socketReader.readLine().equals("OK");
 		} catch (NullPointerException e) {
 			return false;
+		} catch (SocketException e) {
+			return false;
 		}
 	}
 
@@ -245,6 +253,10 @@ public class ConnectionService extends Service {
 			public void run() {
 				if ((socket != null) && (!socket.isClosed())) {
 					try {
+						APDUQueue.clear();
+						sendQueue.clear();
+						responseQueue.clear();
+						readerList.clear();
 						socket.close();
 					} catch (IOException e) {
 						e.printStackTrace();
