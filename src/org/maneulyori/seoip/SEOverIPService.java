@@ -54,7 +54,16 @@ public class SEOverIPService extends HostApduService {
 	@Override
 	public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
 
-		Log.d("SEoIP", commandApdu.toString());
+		Intent i = new Intent("READER_DETECTED");
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("RECV:");
+
+		for (byte b : commandApdu) {
+			sb.append(String.format(" %02X", b));
+		}
+
+		sb.append("\n");
 
 		if (!mService.isConnected()) {
 			Log.d("SEoIP", "ERR No connection");
@@ -63,7 +72,22 @@ public class SEOverIPService extends HostApduService {
 		}
 
 		try {
-			return mService.sendAPDU(commandApdu);
+			byte[] apdu = mService.sendAPDU(commandApdu);
+
+			if (apdu == null) {
+				return new byte[] { (byte) 0x6A, (byte) 0x82 };
+			}
+			sb.append("SEND:");
+
+			for (byte b : apdu) {
+				sb.append(String.format(" %02X", b));
+			}
+
+			i.putExtra("APDU", sb.toString());
+
+			sendBroadcast(i);
+
+			return apdu;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -15,9 +15,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.view.Menu;
 import android.view.View;
@@ -41,6 +43,8 @@ public class MainActivity extends Activity {
 	private int port;
 	private String key;
 
+	private TextView apduView;
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
@@ -59,9 +63,21 @@ public class MainActivity extends Activity {
 		}
 	};
 
+	private BroadcastReceiver readerDetected = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+			apduView.setText(intent.getExtras().getString("APDU"));
+
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		registerReceiver(readerDetected, new IntentFilter("READER_DETECTED"));
 
 		try {
 			KeyStore trusted = KeyStore.getInstance("BKS");
@@ -108,6 +124,8 @@ public class MainActivity extends Activity {
 		final TextView serverPass = (TextView) findViewById(R.id.serverPass);
 		final TextView serverPort = (TextView) findViewById(R.id.serverPort);
 		final TextView connStat = (TextView) findViewById(R.id.connectionStat);
+
+		apduView = textview;
 
 		send.setOnClickListener(new OnClickListener() {
 
@@ -201,7 +219,6 @@ public class MainActivity extends Activity {
 							}
 						}
 					}
-
 				}).start();
 			}
 		});
@@ -270,6 +287,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(readerDetected);
 		stopService(connectionIntent);
 		stopService(seoveripIntent);
 	}

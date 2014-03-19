@@ -15,7 +15,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp"
         android:ems="10"
         android:text="00 A4 04 00 07 D4 10 00 00 03 00 01 33" >
 
@@ -28,7 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/APDU"
         android:layout_below="@+id/APDU"
-        android:layout_marginTop="22dp"
         android:text="Send" />
 
     <TextView
@@ -38,7 +36,6 @@
         android:layout_alignLeft="@+id/send"
         android:layout_alignRight="@+id/APDU"
         android:layout_below="@+id/send"
-        android:layout_marginTop="25dp"
         android:text="Response" />
 
     <Button
@@ -59,55 +56,52 @@
         android:layout_toRightOf="@+id/disconnect"
         android:text="Reconnect" />
 
-    <Button
-        android:id="@+id/connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/response"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="83dp"
-        android:text="Connet" />
-
-    <EditText
-        android:id="@+id/serverAddr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/response"
-        android:layout_centerVertical="true"
-        android:ems="10"
-        android:text="elrond.maneulyori.org" />
-
-    <EditText
-        android:id="@+id/serverPass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/connect"
-        android:layout_alignRight="@+id/response"
-        android:layout_below="@+id/serverAddr"
-        android:layout_marginTop="14dp"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:text="p@ssword" />
-
-    <EditText
-        android:id="@+id/serverPort"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/serverAddr"
-        android:layout_alignBottom="@+id/serverAddr"
-        android:layout_alignRight="@+id/serverPass"
-        android:layout_toRightOf="@+id/serverAddr"
-        android:ems="10"
-        android:inputType="number"
-        android:text="1337" />
-
     <TextView
         android:id="@+id/connectionStat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/connect"
-        android:layout_below="@+id/disconnect"
-        android:layout_marginTop="13dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="23dp"
         android:text="connectionStatus" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/connectionStat"
+        android:layout_alignLeft="@+id/serverAddr"
+        android:text="Connet" />
+
+    <EditText
+        android:id="@+id/serverPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/disconnect"
+        android:layout_alignLeft="@+id/connect"
+        android:layout_alignRight="@+id/response"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text="p@ssword" />
+
+    <EditText
+        android:id="@+id/serverAddr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/serverPass"
+        android:layout_alignLeft="@+id/response"
+        android:ems="10"
+        android:text="elrond.maneulyori.org" />
+
+    <EditText
+        android:id="@+id/serverPort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/serverPass"
+        android:layout_alignRight="@+id/serverPass"
+        android:layout_toRightOf="@+id/serverAddr"
+        android:ems="10"
+        android:inputType="number"
+        android:text="1337" />
 
 </RelativeLayout>

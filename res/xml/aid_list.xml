@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <host-apdu-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:apduServiceBanner="@drawable/card"
     android:description="@string/servicedesc"
-    android:requireDeviceUnlock="false"
-    android:apduServiceBanner="@drawable/card" >
+    android:requireDeviceUnlock="false" >
 
     <aid-group
         android:category="payment"
         android:description="@string/aiddescription" >
+        <aid-filter android:name="F04E66E75C02D8" /> <!-- androcheck Xposed hook -->
 
         <aid-filter android:name="D4100000140001" /> <!-- EB card -->
         <aid-filter android:name="D4100000030001" /> <!-- T-money -->
-		<aid-filter android:name="A0000000031010" /> <!-- Visa -->
-		<aid-filter android:name="A0000000041010" /> <!-- MasterCard credit / debit -->
+        <aid-filter android:name="A0000004520001" /> <!-- I don't know, but metro gate reads this applet. Maybe PayOn? -->
+        <aid-filter android:name="A0000000031010" /> <!-- Visa -->
+        <aid-filter android:name="A0000000041010" /> <!-- MasterCard credit / debit -->
     </aid-group>
 
 </host-apdu-service>
