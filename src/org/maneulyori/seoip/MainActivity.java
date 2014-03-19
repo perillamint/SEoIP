@@ -195,11 +195,11 @@ public class MainActivity extends Activity {
 								&& key != null && port != 0) {
 							if (mService.setupConnection(
 									sslcontext.getSocketFactory(), address,
-									port, key))
+									port, key)) {
 								mService.sendCommand("LOCK 0");
+								handler.post(toastRunnable);
+							}
 						}
-
-						handler.post(toastRunnable);
 					}
 
 				}).start();
@@ -239,9 +239,8 @@ public class MainActivity extends Activity {
 						if (mService.isConnected()) {
 							mService.sendCommand("UNLOCK");
 							mService.disconnect();
+							handler.post(toastRunnable);
 						}
-
-						handler.post(toastRunnable);
 					}
 
 				}).start();

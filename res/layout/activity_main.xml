@@ -17,7 +17,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="14dp"
         android:ems="10"
-        android:text="00 A4 00 00" >
+        android:text="00 A4 04 00 07 D4 10 00 00 03 00 01 33" >
 
         <requestFocus />
     </EditText>

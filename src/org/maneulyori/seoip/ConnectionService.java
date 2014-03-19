@@ -41,16 +41,6 @@ public class ConnectionService extends Service {
 		public void run() {
 			isRunning = true;
 			try {
-				if (isSSL) {
-					socket = sslSocketFactory.createSocket(addr, port);
-				} else {
-					socket = new Socket(addr, port);
-				}
-
-				socketReader = new BufferedReader(new InputStreamReader(
-						socket.getInputStream()));
-				socketPrintStream = new PrintStream(socket.getOutputStream());
-
 				Thread thread = new Thread(new Runnable() {
 
 					@Override
@@ -73,12 +63,6 @@ public class ConnectionService extends Service {
 				});
 
 				thread.start();
-
-				sendAuth(key);
-
-				if (!getCommandSuccess()) {
-					disconnect();
-				}
 
 				while (!terminate) {
 					String resp = socketReader.readLine();
@@ -123,9 +107,20 @@ public class ConnectionService extends Service {
 		this.port = port;
 		this.key = key;
 		this.isSSL = true;
-		mainThread.start();
 
-		return true;
+		try {
+			boolean ret = initializeSocket();
+			if (ret) {
+				mainThread.start();
+			}
+			return ret;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	public boolean setupConnection(SSLSocketFactory sslSocketFactory,
@@ -142,7 +137,39 @@ public class ConnectionService extends Service {
 		this.port = port;
 		this.key = key;
 		this.isSSL = isSSL;
-		mainThread.start();
+
+		try {
+			boolean ret = initializeSocket();
+			if (ret) {
+				mainThread.start();
+			}
+			return ret;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	private boolean initializeSocket() throws UnknownHostException, IOException {
+		if (isSSL) {
+			socket = sslSocketFactory.createSocket(addr, port);
+		} else {
+			socket = new Socket(addr, port);
+		}
+
+		socketReader = new BufferedReader(new InputStreamReader(
+				socket.getInputStream()));
+		socketPrintStream = new PrintStream(socket.getOutputStream());
+
+		sendAuth(key);
+
+		if (!getCommandSuccess()) {
+			disconnect();
+			return false;
+		}
 
 		return true;
 	}
@@ -152,10 +179,13 @@ public class ConnectionService extends Service {
 	};
 
 	public boolean sendCommand(String command) {
-		Log.d("APDU", command);
-		sendQueue.add(command);
-		return readResponse();
+		if (isConnected()) {
+			Log.d("APDU", command);
+			sendQueue.add(command);
+			return readResponse();
+		}
 
+		return false;
 	}
 
 	public byte[] sendAPDU(byte[] apdu) throws IOException {
@@ -233,7 +263,7 @@ public class ConnectionService extends Service {
 		if (socket == null)
 			return false;
 
-		return !socket.isClosed();
+		return (!socket.isClosed()) && socket.isConnected();
 	}
 
 	private boolean getCommandSuccess() throws IOException {
