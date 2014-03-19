@@ -231,7 +231,11 @@ public class ConnectionService extends Service {
 	}
 
 	private boolean getCommandSuccess() throws IOException {
-		return socketReader.readLine().equals("OK");
+		try {
+			return socketReader.readLine().equals("OK");
+		} catch (NullPointerException e) {
+			return false;
+		}
 	}
 
 	void disconnect() {
