@@ -25,6 +25,7 @@ public class ConnectionService extends Service {
 	private int port;
 	private String key;
 	private boolean terminate = false;
+	private boolean isRunning = false;
 
 	private BufferedReader socketReader;
 	private PrintStream socketPrintStream;
@@ -37,6 +38,7 @@ public class ConnectionService extends Service {
 
 		@Override
 		public void run() {
+			isRunning = true;
 			try {
 				if (isSSL) {
 					socket = sslSocketFactory.createSocket(addr, port);
@@ -57,7 +59,6 @@ public class ConnectionService extends Service {
 								try {
 									Thread.sleep(100);
 								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -98,17 +99,23 @@ public class ConnectionService extends Service {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} finally {
+				isRunning = false;
 			}
 		}
 	};
 
-	private Thread mainThread = new Thread(mainRunnable);
+	private Thread mainThread;
 
 	public void setupConnection(SSLSocketFactory sslSocketFactory, String addr,
 			int port, String key) {
-		if (mainThread.isAlive())
-			return;
 
+		if (isRunning) {
+			return;
+		}
+
+		mainThread = new Thread(mainRunnable);
+		this.terminate = false;
 		this.sslSocketFactory = sslSocketFactory;
 		this.addr = addr;
 		this.port = port;
@@ -119,9 +126,13 @@ public class ConnectionService extends Service {
 
 	public void setupConnection(SSLSocketFactory sslSocketFactory, String addr,
 			int port, String key, boolean isSSL) {
-		if (mainThread.isAlive())
-			return;
 
+		if (isRunning) {
+			return;
+		}
+
+		mainThread = new Thread(mainRunnable);
+		this.terminate = false;
 		this.sslSocketFactory = sslSocketFactory;
 		this.addr = addr;
 		this.port = port;
@@ -134,7 +145,7 @@ public class ConnectionService extends Service {
 		socketPrintStream.println("AUTH " + key);
 	};
 
-	public boolean sendCommand(String command) throws IOException {
+	public boolean sendCommand(String command) {
 		Log.d("APDU", command);
 		sendQueue.add(command);
 		return readResponse();
@@ -166,7 +177,6 @@ public class ConnectionService extends Service {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -217,17 +227,31 @@ public class ConnectionService extends Service {
 		if (socket == null)
 			return false;
 
-		return socket.isConnected();
+		return !socket.isClosed();
 	}
 
 	private boolean getCommandSuccess() throws IOException {
 		return socketReader.readLine().equals("OK");
 	}
 
-	private void disconnect() throws IOException {
-		this.terminate = true;
-		if (socket != null)
-			socket.close();
+	void disconnect() {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				if ((socket != null) && (!socket.isClosed())) {
+					try {
+						socket.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				terminate = true;
+
+			}
+
+		}).start();
 	}
 
 	private final IBinder mBinder = new ConnectionBinder();
@@ -246,11 +270,7 @@ public class ConnectionService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		try {
-			disconnect();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		disconnect();
 	}
 
 	@Override
@@ -271,15 +291,14 @@ public class ConnectionService extends Service {
 			public void run() {
 				try {
 					disconnect();
-
-					Thread.sleep(200);
+					while (!isRunning)
+						Thread.sleep(200);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
 				mainThread = new Thread(mainRunnable);
+				terminate = false;
 				mainThread.start();
 			}
 

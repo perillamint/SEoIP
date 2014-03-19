@@ -54,26 +54,18 @@ public class SEOverIPService extends HostApduService {
 	@Override
 	public byte[] processCommandApdu(byte[] commandApdu, Bundle extras) {
 
+		Log.d("SEoIP", commandApdu.toString());
+
+		if (!mService.isConnected()) {
+			Log.d("SEoIP", "ERR No connection");
+			return new byte[] { (byte) 0x6A, (byte) 0x82 }; // File not found
+															// response.
+		}
+
 		try {
-			mService.sendCommand("LOCK 0");
-
-			Log.d("SEoIP", commandApdu.toString());
-
-			if (!mService.isConnected()) {
-				Log.d("SEoIP", "ERR No connection");
-				return new byte[] { (byte) 0x6A, (byte) 0x82 }; //File not found response.
-			}
-
-			try {
-				return mService.sendAPDU(commandApdu);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			mService.sendCommand("UNLOCK");
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			return mService.sendAPDU(commandApdu);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return new byte[] { (byte) 0x6A, (byte) 0x82 };

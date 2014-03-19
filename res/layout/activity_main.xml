@@ -42,31 +42,31 @@
         android:text="Response" />
 
     <Button
-        android:id="@+id/stop"
+        android:id="@+id/disconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/start"
-        android:layout_alignBottom="@+id/start"
-        android:layout_toRightOf="@+id/start"
-        android:text="Stop" />
+        android:layout_alignBaseline="@+id/connect"
+        android:layout_alignBottom="@+id/connect"
+        android:layout_toRightOf="@+id/connect"
+        android:text="Disconnect" />
 
     <Button
         android:id="@+id/reconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/stop"
-        android:layout_alignBottom="@+id/stop"
-        android:layout_toRightOf="@+id/stop"
+        android:layout_alignBaseline="@+id/disconnect"
+        android:layout_alignBottom="@+id/disconnect"
+        android:layout_toRightOf="@+id/disconnect"
         android:text="Reconnect" />
 
     <Button
-        android:id="@+id/start"
+        android:id="@+id/connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/response"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="83dp"
-        android:text="Start" />
+        android:text="Connet" />
 
     <EditText
         android:id="@+id/serverAddr"
@@ -81,7 +81,7 @@
         android:id="@+id/serverPass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/start"
+        android:layout_alignLeft="@+id/connect"
         android:layout_alignRight="@+id/response"
         android:layout_below="@+id/serverAddr"
         android:layout_marginTop="14dp"
@@ -100,5 +100,14 @@
         android:ems="10"
         android:inputType="number"
         android:text="1337" />
+
+    <TextView
+        android:id="@+id/connectionStat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/connect"
+        android:layout_below="@+id/disconnect"
+        android:layout_marginTop="13dp"
+        android:text="connectionStatus" />
 
 </RelativeLayout>
